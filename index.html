@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f2ec">
+  <title>뮤직은 내 삶</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f4f2ec;
+      --ink: #18231f;
+      --muted: #68736c;
+      --line: #c9cec4;
+      --green: #b7e34b;
+      --orange: #ee7049;
+      --blue: #a9d7df;
+      --yellow: #f4cf56;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image: radial-gradient(#18231f12 0.7px, transparent 0.7px);
+      background-size: 7px 7px;
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    }
+
+    button { font: inherit; }
+
+    .page {
+      width: min(1120px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 30px 0 54px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .topline-mark { color: var(--ink); }
+
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 180px;
+      align-items: end;
+      gap: 24px;
+      padding: 66px 0 38px;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(42px, 8vw, 94px);
+      line-height: 0.98;
+      letter-spacing: -0.065em;
+      word-break: keep-all;
+    }
+
+    .intro-note {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      word-break: keep-all;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(270px, 0.78fr) minmax(0, 1.22fr);
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .picker {
+      padding: 26px 28px 28px 0;
+      border-right: 1px solid var(--line);
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 0 17px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .section-label span:last-child { color: var(--ink); }
+
+    .moods { display: grid; gap: 9px; }
+
+    .mood-button {
+      display: flex;
+      width: 100%;
+      min-height: 64px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      border: 1px solid var(--ink);
+      border-radius: 3px;
+      color: var(--ink);
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      transition: color 160ms ease, background-color 160ms ease, transform 160ms ease;
+    }
+
+    .mood-button:hover { transform: translateX(4px); }
+    .mood-button[aria-pressed="true"] { color: var(--ink); }
+    .mood-button[data-mood="motivation"][aria-pressed="true"] { background: var(--green); }
+    .mood-button[data-mood="workout"][aria-pressed="true"] { background: var(--orange); }
+    .mood-button[data-mood="encouragement"][aria-pressed="true"] { background: var(--blue); }
+    .mood-button[data-mood="wake-up"][aria-pressed="true"] { background: var(--yellow); }
+
+    .mood-name { font-size: 19px; font-weight: 800; }
+    .mood-arrow { font-size: 19px; }
+
+    .player-panel { min-width: 0; padding: 26px 0 28px 28px; }
+
+    .now-playing {
+      min-height: 40px;
+      margin: 0 0 14px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .now-playing small {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    .video-frame {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 1px solid var(--ink);
+      background: #202722;
+    }
+
+    .video-frame iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .player-hint {
+      display: flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .player-hint a { color: inherit; font-weight: 700; }
+    .sound-mark { color: var(--ink); font-weight: 800; }
+
+    .save-track {
+      min-height: 38px;
+      margin-top: 8px;
+      padding: 0 13px;
+      border: 1px solid var(--ink);
+      border-radius: 3px;
+      background: transparent;
+      color: var(--ink);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .save-track:disabled { cursor: not-allowed; opacity: 0.5; }
+    .save-track:not(:disabled):hover { background: var(--green); }
+
+    .library { margin-top: 34px; }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .tab {
+      min-height: 44px;
+      padding: 0 17px;
+      border: 1px solid transparent;
+      border-bottom: 0;
+      border-radius: 3px 3px 0 0;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab[aria-selected="true"] {
+      border-color: var(--ink);
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    .tab-panel { padding: 22px 0; }
+    .panel-heading { margin: 0 0 5px; font-size: 19px; }
+    .panel-description { margin: 0 0 18px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .entry-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      background: #ffffff80;
+    }
+
+    .entry-copy { min-width: 0; }
+    .entry-title { margin: 0; font-size: 15px; font-weight: 800; overflow-wrap: anywhere; }
+    .entry-meta { margin: 5px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+    .entry-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
+    .entry-actions a, .entry-actions button {
+      padding: 7px 9px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      color: var(--ink);
+      background: transparent;
+      font: inherit;
+      font-size: 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .entry-actions a:hover, .entry-actions button:hover { border-color: var(--ink); }
+    .empty-state { margin: 0; padding: 18px 0; color: var(--muted); font-size: 13px; }
+    .diary-entry {
+      padding: 17px;
+      border: 1px solid var(--line);
+      background: #ffffff80;
+    }
+
+    .diary-entry-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .diary-entry-title { margin: 0; font-size: 16px; font-weight: 800; }
+    .diary-entry-song { margin: 12px 0 0; font-size: 13px; font-weight: 700; line-height: 1.6; overflow-wrap: anywhere; }
+    .diary-entry-song a { margin-left: 6px; color: var(--muted); font-size: 12px; font-weight: 600; }
+    .diary-entry-feeling {
+      margin: 9px 0 0;
+      padding-top: 11px;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+      line-height: 1.75;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .diary-delete {
+      flex: 0 0 auto;
+      padding: 7px 9px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      color: var(--ink);
+      background: transparent;
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .diary-delete:hover { border-color: var(--ink); }
+
+    .diary-form {
+      display: grid;
+      max-width: 560px;
+      gap: 10px;
+      margin: 0 0 24px;
+    }
+
+    .diary-form label { font-size: 12px; font-weight: 700; }
+    .diary-form input, .diary-form textarea {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      color: var(--ink);
+      background: #fff;
+      font: inherit;
+    }
+
+    .diary-form textarea { min-height: 82px; resize: vertical; }
+    .diary-form input:focus, .diary-form textarea:focus { outline: 2px solid var(--green); outline-offset: 1px; }
+    .diary-current { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .diary-submit {
+      min-height: 42px;
+      justify-self: start;
+      padding: 0 15px;
+      border: 0;
+      border-radius: 3px;
+      background: var(--ink);
+      color: var(--paper);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .diary-submit:disabled { cursor: not-allowed; opacity: 0.5; }
+    .storage-status { min-height: 18px; margin: 10px 0 0; color: var(--muted); font-size: 12px; }
+    .storage-status[data-error="true"] { color: #a32b22; }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 17px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    @media (max-width: 720px) {
+      .page { width: min(100% - 32px, 560px); padding-top: 18px; }
+      .intro { grid-template-columns: 1fr; gap: 15px; padding: 46px 0 28px; }
+      .intro-note { max-width: 300px; margin: 0; }
+      .layout { grid-template-columns: 1fr; }
+      .picker { padding: 22px 0; border-right: 0; border-bottom: 1px solid var(--line); }
+      .moods { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .mood-button { min-height: 58px; padding: 0 13px; }
+      .mood-name { font-size: 17px; }
+      .player-panel { padding: 22px 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topline">
+      <span class="topline-mark">MUSIK / DAILY MODE</span>
+      <span>오늘도 일단 재생</span>
+    </div>
+
+    <header class="intro">
+      <h1>뮤직은<br>내 삶</h1>
+      <p class="intro-note">생각은 잠깐 접어두고,<br>지금 필요한 리듬부터 고르기.</p>
+    </header>
+
+    <section class="layout" aria-label="음악 선택 및 재생">
+      <div class="picker">
+        <p class="section-label"><span>01 / 오늘의 모드</span><span>하나를 골라요</span></p>
+        <div class="moods" role="group" aria-label="재생할 음악 모드">
+          <button class="mood-button" type="button" data-mood="motivation" aria-pressed="false">
+            <span class="mood-name">동기부여</span><span class="mood-arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="mood-button" type="button" data-mood="workout" aria-pressed="false">
+            <span class="mood-name">운동</span><span class="mood-arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="mood-button" type="button" data-mood="encouragement" aria-pressed="false">
+            <span class="mood-name">격려</span><span class="mood-arrow" aria-hidden="true">↗</span>
+          </button>
+          <button class="mood-button" type="button" data-mood="wake-up" aria-pressed="false">
+            <span class="mood-name">각성</span><span class="mood-arrow" aria-hidden="true">↗</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="player-panel">
+        <p class="section-label"><span>02 / 지금 재생</span><span class="sound-mark">SOUND ON</span></p>
+        <p class="now-playing" id="now-playing"><small>선택된 모드</small>모드를 선택해 주세요</p>
+        <div class="video-frame">
+          <iframe id="music-player" title="선택한 유튜브 음악 영상" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+        <div class="player-hint">
+          <span id="player-status" aria-live="polite">버튼을 누르면 음악이 시작됩니다.</span>
+          <a id="youtube-link" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" hidden>YouTube에서 직접 보기 ↗</a>
+          <span>YOUTUBE PLAYER</span>
+        </div>
+        <button class="save-track" id="save-track" type="button" disabled>현재 곡을 플레이리스트에 담기</button>
+      </div>
+    </section>
+
+    <section class="library" aria-label="개인 음악 보관함">
+      <div class="tabs" role="tablist" aria-label="개인 음악 메뉴">
+        <button class="tab" id="playlist-tab" type="button" role="tab" aria-selected="true" aria-controls="playlist-panel">내 플레이리스트</button>
+        <button class="tab" id="diary-tab" type="button" role="tab" aria-selected="false" aria-controls="diary-panel" tabindex="-1">노래 일기</button>
+      </div>
+
+      <section class="tab-panel" id="playlist-panel" role="tabpanel" aria-labelledby="playlist-tab">
+        <h2 class="panel-heading">내 플레이리스트</h2>
+        <p class="panel-description">마음에 든 곡을 저장해 두고 언제든 다시 찾아보세요.</p>
+        <ul class="entry-list" id="playlist-list"></ul>
+        <p class="storage-status" id="playlist-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="tab-panel" id="diary-panel" role="tabpanel" aria-labelledby="diary-tab" hidden>
+        <h2 class="panel-heading">노래 일기</h2>
+        <p class="panel-description">언제 어떤 곡을 들었는지, 그때 어떤 기분이었는지 기록해 보세요.</p>
+        <form class="diary-form" id="diary-form">
+          <p class="diary-current" id="diary-current">먼저 오늘의 모드를 골라 들을 곡을 선택해 주세요.</p>
+          <label for="diary-listened-at">들은 날짜와 시간</label>
+          <input id="diary-listened-at" name="listenedAt" type="datetime-local" required>
+          <label for="diary-feeling">이 노래를 들을 때의 기분</label>
+          <textarea id="diary-feeling" name="feeling" maxlength="500" placeholder="예: 마음이 차분해지고 다시 시작할 힘이 생겼다." required></textarea>
+          <button class="diary-submit" id="diary-submit" type="submit" disabled>일기 저장하기</button>
+        </form>
+        <ul class="entry-list" id="diary-list"></ul>
+        <p class="storage-status" id="diary-status" role="status" aria-live="polite"></p>
+      </section>
+    </section>
+
+    <footer><span>MOOD SELECTOR · 2026</span><span>기분에 맞는 소리를 재생하세요.</span></footer>
+  </main>
+
+  <script>
+    const tracks = {
+      motivation: { label: "동기부여", videos: [{ id: "wbO3p7_Mf30", title: "Hopes And Dreams (UNDERTALE Soundtrack)" }] },
+      workout: { label: "운동", videos: [{ id: "kpnW68Q8ltc", title: "The Only Thing They Fear Is You (Doom Eternal OST)" }] },
+      encouragement: { label: "격려", videos: [{ id: "8tf-gVaHdag", title: "His Theme" }] },
+      "wake-up": { label: "각성", videos: [{ id: "0FCvzsVlXpQ", title: "MEGALOVANIA" }] }
+    };
+
+    const buttons = document.querySelectorAll(".mood-button");
+    const player = document.querySelector("#music-player");
+    const videoFrame = player.closest(".video-frame");
+    const nowPlaying = document.querySelector("#now-playing");
+    const playerStatus = document.querySelector("#player-status");
+    const youtubeLink = document.querySelector("#youtube-link");
+    const saveTrackButton = document.querySelector("#save-track");
+    const playlistList = document.querySelector("#playlist-list");
+    const diaryList = document.querySelector("#diary-list");
+    const diaryForm = document.querySelector("#diary-form");
+    const diaryCurrent = document.querySelector("#diary-current");
+    const diaryDateInput = document.querySelector("#diary-listened-at");
+    const diaryFeelingInput = document.querySelector("#diary-feeling");
+    const diarySubmit = document.querySelector("#diary-submit");
+    const tabs = document.querySelectorAll(".tab");
+    const panels = document.querySelectorAll(".tab-panel");
+    const playlistStatus = document.querySelector("#playlist-status");
+    const diaryStatus = document.querySelector("#diary-status");
+    const playlistStorageKey = "musik-daily-playlist";
+    const diaryStorageKey = "musik-daily-diary";
+    let currentTrack = null;
+
+    function readEntries(key, statusElement) {
+      try {
+        const saved = localStorage.getItem(key);
+        if (!saved) return [];
+        const entries = JSON.parse(saved);
+        if (!Array.isArray(entries)) throw new Error("저장된 데이터 형식이 올바르지 않습니다.");
+        return entries;
+      } catch (error) {
+        statusElement.dataset.error = "true";
+        statusElement.textContent = `저장한 내용을 불러오지 못했습니다: ${error.message}`;
+        return [];
+      }
+    }
+
+    let playlist = readEntries(playlistStorageKey, playlistStatus);
+    let diary = readEntries(diaryStorageKey, diaryStatus);
+
+    function persistEntries(key, entries, statusElement) {
+      try {
+        localStorage.setItem(key, JSON.stringify(entries));
+        statusElement.removeAttribute("data-error");
+        statusElement.textContent = "";
+        return true;
+      } catch (error) {
+        statusElement.dataset.error = "true";
+        statusElement.textContent = `저장하지 못했습니다: ${error.message}`;
+        return false;
+      }
+    }
+
+    function makeEntry(title, meta, href, actionLabel, onRemove) {
+      const item = document.createElement("li");
+      item.className = "entry";
+      const copy = document.createElement("div");
+      copy.className = "entry-copy";
+      const heading = document.createElement("p");
+      heading.className = "entry-title";
+      heading.textContent = title;
+      const details = document.createElement("p");
+      details.className = "entry-meta";
+      details.textContent = meta;
+      copy.append(heading, details);
+
+      const actions = document.createElement("div");
+      actions.className = "entry-actions";
+      const link = document.createElement("a");
+      link.href = href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "YouTube에서 듣기";
+      actions.append(link);
+      if (onRemove) {
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.textContent = actionLabel;
+        removeButton.addEventListener("click", onRemove);
+        actions.append(removeButton);
+      }
+      item.append(copy, actions);
+      return item;
+    }
+
+    function renderPlaylist() {
+      playlistList.replaceChildren();
+      if (!playlist.length) {
+        const empty = document.createElement("li");
+        empty.className = "empty-state";
+        empty.textContent = "아직 저장한 곡이 없습니다. 재생 화면에서 마음에 드는 곡을 담아보세요.";
+        playlistList.append(empty);
+        return;
+      }
+
+      playlist.forEach((entry) => {
+        playlistList.append(makeEntry(
+          entry.title,
+          `${entry.label} · 플레이리스트에 저장됨`,
+          `https://www.youtube.com/watch?v=${encodeURIComponent(entry.videoId)}`,
+          "삭제",
+          () => {
+            const updated = playlist.filter((item) => item.id !== entry.id);
+            if (persistEntries(playlistStorageKey, updated, playlistStatus)) {
+              playlist = updated;
+              renderPlaylist();
+            }
+          }
+        ));
+      });
+    }
+
+    function renderDiary() {
+      diaryList.replaceChildren();
+      if (!diary.length) {
+        const empty = document.createElement("li");
+        empty.className = "empty-state";
+        empty.textContent = "아직 노래 일기가 없습니다. 곡을 선택하고 그때의 기분을 기록해 보세요.";
+        diaryList.append(empty);
+        return;
+      }
+
+      diary.forEach((entry) => {
+        const listenedAt = new Date(entry.listenedAt);
+        const formattedDate = new Intl.DateTimeFormat("ko-KR", {
+          year: "numeric", month: "2-digit", day: "2-digit",
+          hour: "2-digit", minute: "2-digit", hour12: false
+        }).format(listenedAt);
+        const item = document.createElement("li");
+        item.className = "diary-entry";
+        const header = document.createElement("div");
+        header.className = "diary-entry-header";
+        const heading = document.createElement("h3");
+        heading.className = "diary-entry-title";
+        heading.textContent = formattedDate;
+        const removeButton = document.createElement("button");
+        removeButton.className = "diary-delete";
+        removeButton.type = "button";
+        removeButton.textContent = "일기 삭제";
+        removeButton.setAttribute("aria-label", `${formattedDate} 일기 삭제`);
+        removeButton.addEventListener("click", () => {
+          const updated = diary.filter((item) => item.id !== entry.id);
+          if (persistEntries(diaryStorageKey, updated, diaryStatus)) {
+            diary = updated;
+            renderDiary();
+          }
+        });
+        header.append(heading, removeButton);
+
+        const song = document.createElement("p");
+        song.className = "diary-entry-song";
+        song.append(document.createTextNode(`${entry.title} · ${entry.label}`));
+        const link = document.createElement("a");
+        link.href = `https://www.youtube.com/watch?v=${encodeURIComponent(entry.videoId)}`;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "YouTube에서 듣기";
+        song.append(link);
+
+        const feeling = document.createElement("p");
+        feeling.className = "diary-entry-feeling";
+        feeling.textContent = entry.feeling;
+        item.append(header, song, feeling);
+        diaryList.append(item);
+      });
+    }
+
+    function selectTrack(button) {
+      const track = tracks[button.dataset.mood];
+      const video = track.videos[Math.floor(Math.random() * track.videos.length)];
+      currentTrack = { videoId: video.id, title: video.title, label: track.label };
+
+      buttons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+      nowPlaying.innerHTML = `<small>선택된 모드 · ${track.label}</small>${video.title}`;
+      const watchUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(video.id)}`;
+      const embedParams = new URLSearchParams({ autoplay: "1", rel: "0", playsinline: "1" });
+      if (location.protocol === "http:" || location.protocol === "https:") {
+        embedParams.set("origin", location.origin);
+      }
+
+      if (location.protocol === "file:") {
+        player.removeAttribute("src");
+        videoFrame.hidden = true;
+      } else {
+        videoFrame.hidden = false;
+        player.src = `https://www.youtube.com/embed/${encodeURIComponent(video.id)}?${embedParams}`;
+      }
+      youtubeLink.href = watchUrl;
+      youtubeLink.hidden = false;
+      playerStatus.textContent = location.protocol === "file:"
+        ? "file://에서는 영상 임베드가 차단됩니다. Live Server로 열거나 YouTube에서 직접 보세요."
+        : "영상이 표시되지 않으면 YouTube에서 직접 보세요.";
+      saveTrackButton.disabled = false;
+      diaryCurrent.textContent = `기록할 곡: ${video.title} · ${track.label}`;
+      diarySubmit.disabled = false;
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => selectTrack(button));
+    });
+
+    saveTrackButton.addEventListener("click", () => {
+      if (!currentTrack) return;
+      if (playlist.some((entry) => entry.videoId === currentTrack.videoId)) {
+        playlistStatus.textContent = "이미 플레이리스트에 담긴 곡입니다.";
+        return;
+      }
+      const entry = { ...currentTrack, id: crypto.randomUUID(), savedAt: new Date().toISOString() };
+      const updated = [entry, ...playlist];
+      if (persistEntries(playlistStorageKey, updated, playlistStatus)) {
+        playlist = updated;
+        renderPlaylist();
+        playlistStatus.textContent = "플레이리스트에 곡을 담았습니다.";
+      }
+    });
+
+    diaryForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (!currentTrack) return;
+      const feeling = diaryFeelingInput.value.trim();
+      if (!feeling) {
+        diaryFeelingInput.focus();
+        return;
+      }
+      const entry = {
+        ...currentTrack,
+        id: crypto.randomUUID(),
+        listenedAt: diaryDateInput.value,
+        feeling
+      };
+      const updated = [entry, ...diary];
+      if (persistEntries(diaryStorageKey, updated, diaryStatus)) {
+        diary = updated;
+        renderDiary();
+        diaryForm.reset();
+        diaryDateInput.value = toLocalDateTimeValue(new Date());
+        diaryStatus.textContent = "노래 일기를 저장했습니다.";
+      }
+    });
+
+    function toLocalDateTimeValue(date) {
+      const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      return localDate.toISOString().slice(0, 16);
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((item) => {
+          const selected = item === tab;
+          item.setAttribute("aria-selected", String(selected));
+          item.tabIndex = selected ? 0 : -1;
+        });
+        panels.forEach((panel) => {
+          panel.hidden = panel.id !== tab.getAttribute("aria-controls");
+        });
+      });
+    });
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        const nextTab = tabs[(index + (event.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+        nextTab.focus();
+        nextTab.click();
+      });
+    });
+
+    diaryDateInput.value = toLocalDateTimeValue(new Date());
+    renderPlaylist();
+    renderDiary();
+  </script>
+</body>
+</html>
